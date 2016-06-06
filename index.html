@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+
+<input type="button" onclick="init()"/>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
+<script>
+
+    function init() {
+        $.ajax({
+            type: 'GET',
+            url: 'http://10.40.11.114:9200/_cat/nodes?v',
+            //crossDomain: true,
+            //dataType: 'json',
+            success: function (responseData, textStatus, jqXHR) {
+                console.log(responseData);
+            },
+            error: function (responseData, textStatus, errorThrown) {
+                alert('CORS failed - ' + textStatus);
+            }
+        });
+    }
+</script>
+</body>
+</html>
