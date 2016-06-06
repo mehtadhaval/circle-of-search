@@ -19,7 +19,8 @@
   "permissions": [
       "*://10.40.11.114/*",
       "notifications",
-      "tabs"
+      "tabs",
+      "storage"
   ],
 
   "background": {
@@ -233,6 +234,12 @@
 			"*://www.google.co.zw/*"
         ]
     }
-  ],  
-  "default_locale": "en"
+  ],
+  "browser_action": {
+    "default_icon": {
+     "32" : "icons/link-48.png"
+    },
+    "default_title": "Configure CoS",
+    "default_popup": "ui/config.html"
+  }
 }
