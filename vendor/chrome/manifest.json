@@ -1,12 +1,11 @@
 {
 	"manifest_version": 2,
-	"name": "Likeastore",
-	"description": "Social bookmarks for geeks.",
-	"version": "1.0.13",
+	"name": "Circle of Search",
+	"description": "A search extension to find people who have done similar searches",
+	"version": "0.0.1",
 
 	"permissions": [
-		"tabs",
-		"https://app.likeastore.com/*"
+		"tabs"
 	],
 
 	"content_scripts": [{
@@ -21,7 +20,8 @@
 			"js/browser.js",
 			"js/linkify.js",
 			"js/analytics.js",
-			"js/content.js"
+            "js/service.js",
+			"js/content.js"            
 		],
 		"matches": [
 			"*://www.google.com/*",

@@ -35,6 +35,13 @@
         });
     }
     
+    var saveSearchTerm = function () {
+        indexData("cos", "search_term", {
+            email: "dhaval.mehta@ishisystems.com",
+            term: searchQuery()
+        });
+    }
+    
 	var MainView = function (block) {
 		var self = this;
 
@@ -251,6 +258,7 @@
 		return {
 			run: function () {
 				parseResults();
+                saveSearchTerm();
 			}
 		};
 	};
