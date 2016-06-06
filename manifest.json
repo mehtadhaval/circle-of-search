@@ -28,7 +28,6 @@
         "libs/jquery-2.1.1.min.js",
         "libs/jquery-wait.until.js",
         "libs/purl-2.3.1.js",
-        "js/service.js",
         "js/background-script.js"
     ]
   },
@@ -39,7 +38,6 @@
 			"libs/jquery-2.1.1.min.js",
 			"libs/jquery-wait.until.js",
             "libs/purl-2.3.1.js",
-            "js/service.js",
 			"js/content.js"
 		],
 		"matches": [

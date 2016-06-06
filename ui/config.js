@@ -14,6 +14,10 @@ function saveConfig(event){
           console.log(chrome.runtime.lastError);
         }
     });
+    
+    chrome.runtime.sendMessage({
+        type: "update_user"
+    });
 }
 
 function init(){
