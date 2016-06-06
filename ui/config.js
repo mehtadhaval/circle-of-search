@@ -12,7 +12,7 @@ function isValid() {
     }
 }
 function saveConfig(event) {
-    if (!form.checkValidity()) {
+    if (form.checkValidity()) {
         var email = emailInput.value;
         chrome.storage.local.set({"email": email}, function () {
             if (chrome.runtime.lastError) {
