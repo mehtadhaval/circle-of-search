@@ -31,7 +31,7 @@ A search extension to find people who have done similar searches
 - Add mapping to elasticsearch 
     
 
-> ` curl -X POST 'http://localhost:9200/cos/search_term/_mapping' -d  @mappings/search_term.json    `
->` curl -X POST http://localhost:9200/cos/result_visited/_mapping' -d @mappings/result_visited.json `
+> ` curl -X POST 'http://localhost:9200/cos/search_term/_mapping' -d  @mappings/search_term.json `
+> ` curl -X POST http://localhost:9200/cos/result_visited/_mapping' -d @mappings/result_visited.json `
 
 - Optional Elastic Search Browsers plugin `` https://github.com/mobz/elasticsearch-head ``
