@@ -1,0 +1,13 @@
+{
+  "properties": {
+    "term": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "date"
+    },
+    "email": {
+      "type": "string"
+    }
+  }
+}

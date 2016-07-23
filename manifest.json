@@ -9,13 +9,6 @@
     "48": "icons/link-48.png"
   },
 
-  "applications": {
-    "gecko": {
-      "id": "notify-link-clicks-i18n@mozilla.org",
-      "strict_min_version": "46.0a1"
-    }
-  },
-
   "permissions": [
       "*://10.40.11.114/*",
       "notifications",
@@ -28,16 +21,17 @@
         "libs/jquery-2.1.1.min.js",
         "libs/jquery-wait.until.js",
         "libs/purl-2.3.1.js",
+        "libs/lodash.js",
         "js/background-script.js"
     ]
   },
-  
+
   "content_scripts": [
     {
       "js": [
 			"libs/jquery-2.1.1.min.js",
 			"libs/jquery-wait.until.js",
-            "libs/purl-2.3.1.js",
+      "libs/purl-2.3.1.js",
 			"js/content.js"
 		],
 		"matches": [

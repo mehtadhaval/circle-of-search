@@ -4,8 +4,8 @@ Then display a notification. The notification contains the URL,
 which we read from the message.
 */
 
-var email = null;
-var ES_URL = "https://10.40.11.114:9200"
+var email = "test@example.com";
+var ES_URL = "https://127.0.0.1:9200"
 
 function loadUserData() {
     chrome.storage.local.get("email", function(result) {
@@ -17,7 +17,7 @@ function loadUserData() {
     });
 }
 
-function search(query, index, type) {    
+function search(query, index, type) {
     return $.ajax({
         url: ES_URL+"/"+index+"/"+type+"/_search",
         data: JSON.stringify(query),
@@ -33,10 +33,12 @@ function processSearchSearchTermResponse(result){
 
 var contextualizeData = function(data){
     data['email'] = email;
+    data['timestamp'] = Date.now();
 }
 
 var indexData = function(index, type, data){
     contextualizeData(data);
+    console.log(data);
     $.ajax({
         url: ES_URL+"/"+index+"/"+type,
         data: JSON.stringify(data),
@@ -48,52 +50,102 @@ var indexData = function(index, type, data){
 
 function findSearchTerms(searchTerm){
     query = {
-          "size": 0,
-          "aggs": {
-            "emails": {
-              "aggs": {
-                "emails": {
-                  "terms": {
-                    "field": "email"
-                  }
+        "aggs": {
+          "email": {
+            "terms": {
+              "field": "email",
+              "order": {
+                "avg_score": "desc"
+              }
+            },
+            "aggs": {
+              "avg_score": {
+                "avg": {
+                  "script": "_score"
                 }
               },
-              "filter": {
-                "query_string": {
-                  "query": searchTerm,
-                  "fields": [
-                    "term"
-                  ]
+              "last_searched": {
+                "max": {
+                  "field": "timestamp"
+                }
+              },
+              "top_searches": {
+                "terms": {
+                  "field": "term",
+                  "order": {
+                    "avg_score": "desc"
+                  }
+                },
+                "aggs": {
+                  "avg_score": {
+                    "avg": {
+                      "script": "_score"
+                    }
+                  }
                 }
               }
             }
           }
-        };
+        },
+        "query": {
+          "function_score": {
+            "query": {
+              "fuzzy": {
+                "term": searchTerm
+              }
+            },
+            "functions": [
+              {
+                "gauss": {
+                  "timestamp": {
+                    "origin": "now",
+                    "scale": "3d",
+                    "offset": 0,
+                    "decay": 0.99
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "size": 0
+      };
     search(query, "cos", "search_term").done(function(result){
-        data = result.aggregations.emails.emails.buckets
-        
-        chrome.notifications.create({
-            "type": "basic",
-            "iconUrl": chrome.extension.getURL("icons/link-48.png"),
-            "title": "Who searched for this !!!",
-            "message": JSON.stringify(data)
+
+        results = _.map(result.aggregations.email.buckets, function(bucket){
+          return {
+            "email": bucket.key,
+            "last_searched": bucket.last_searched.value,
+            "search_terms": _.map(bucket.top_searches, function(top_search){
+              return top_search.key;
+            })
+          }
+        });
+
+        if(!results.length){
+          return;
+        }
+
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            type: "matching_searches",
+            data: results
           });
-        /*
-        chrome.tabs.sendMessage({
-            type: "search_term_available",
-            data: data
-        });*/
+        });
     })
 }
 
 function notify(message) {
     switch(message.type){
-        case "search_term": 
+        case "search_term":
             indexData("cos", "search_term", message.data);
             findSearchTerms(message.data.term);
             break;
         case "update_user":
             loadUserData();
+            break;
+        case "result_visited":
+            indexData("cos", "result_visited", message.data);
             break;
         default:
             console.log("Handler not defined for "+message.type)

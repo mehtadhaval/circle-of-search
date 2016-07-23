@@ -1,0 +1,22 @@
+{
+  "properties": {
+    "term": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "date"
+    },
+    "email": {
+      "type": "string"
+    },
+    "title": {
+        "type": "string"
+    },
+    "link": {
+        "type": "string"
+    },
+    "snippet": {
+        "type": "string"
+    }
+  }
+}
