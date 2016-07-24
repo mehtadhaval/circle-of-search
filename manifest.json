@@ -31,8 +31,9 @@
       "js": [
 			"libs/jquery-2.1.1.min.js",
 			"libs/jquery-wait.until.js",
-            "libs/purl-2.3.1.js",
-            "libs/handlebars-v4.0.5.js",
+      "libs/purl-2.3.1.js",
+      "libs/handlebars-v4.0.5.js",
+      "libs/lodash.js",
 			"js/content.js"
 		],
 		"matches": [
@@ -236,6 +237,7 @@
     "default_popup": "ui/config.html"
   },
   "web_accessible_resources": [
-    "ui/search_results.html"
+    "ui/search_results.html",
+    "ui/urls_visited.html"
   ]
 }

@@ -70,7 +70,7 @@ var indexData = function(index, type, data){
     });
 }
 
-function findSearchTerms(searchTerm){
+function findSearchTerms(searchTerm) {
     query = {
       "aggs": {
         "email": {
@@ -164,8 +164,82 @@ function findSearchTerms(searchTerm){
         }
 
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          if(!tabs[0]){
+            return true;
+          }
           chrome.tabs.sendMessage(tabs[0].id, {
             type: "matching_searches",
+            data: results
+          });
+        });
+    })
+}
+
+function findVisitedURL(data) {
+    query = {
+      "aggs": {
+        "url": {
+          "terms": {
+            "field": "url"
+          },
+          "aggs": {
+            "email": {
+              "terms": {
+                "field": "email"
+              }
+            }
+          }
+        }
+      },
+      "query": {
+        "filtered": {
+          "filter": {
+            "and": [
+              {
+                "terms": {
+                  "url": data.urls
+                }
+              },
+              {
+                "not": {
+                  "term": {
+                    "email": email
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "size": 0
+    };
+    console.log("visited URLs search query : ", query);
+    search(query, "cos", "result_visited").done(function(result){
+        results = _.map(result.aggregations.url.buckets, function(bucket){
+          return {
+            "url": bucket.key,
+            "users": _.map(bucket.email.buckets, function(user){
+              return {
+                "email": user.key,
+                "count": user.doc_count
+              }
+            })
+          }
+        });
+        if(!results.length){
+          return;
+        }
+
+        results = _.keyBy(results, function(result){
+          return result.url;
+        })
+
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          if(!tabs[0]){
+            return true;
+          }
+          chrome.tabs.sendMessage(tabs[0].id, {
+            type: "matching_urls",
             data: results
           });
         });
@@ -180,17 +254,20 @@ function notify(message) {
     }
     switch(message.type){
         case "search_term":
-            indexData("cos", "search_term", message.data);
-            findSearchTerms(message.data.term);
-            break;
+          indexData("cos", "search_term", message.data);
+          findSearchTerms(message.data.term);
+          break;
+        case "search_url":
+          findVisitedURL(message.data);
+          break;
         case "update_user":
-            loadUserData();
-            break;
+          loadUserData();
+          break;
         case "result_visited":
-            indexData("cos", "result_visited", message.data);
-            break;
+          indexData("cos", "result_visited", message.data);
+          break;
         default:
-            console.log("Handler not defined for "+message.type)
+          console.log("Handler not defined for "+message.type)
     }
 }
 
