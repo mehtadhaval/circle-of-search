@@ -4,15 +4,37 @@ Then display a notification. The notification contains the URL,
 which we read from the message.
 */
 
-var email = "test@example.com";
+var email = null;
 var ES_URL = "https://127.0.0.1:9200"
+
+function checkUserLoggedIn() {
+  if(!email){
+    chrome.browserAction.setIcon({
+      path: 'icons/link-logged-out-48.png'
+    });
+    chrome.browserAction.setTitle({
+      title: 'Enter email address to continue'
+    });
+    return false;
+  }else{
+    chrome.browserAction.setIcon({
+      path: 'icons/link-48.png'
+    });
+    chrome.browserAction.setTitle({
+      title: 'Configure CoS'
+    });
+    return true;
+  }
+}
 
 function loadUserData() {
     chrome.storage.local.get("email", function(result) {
         if(chrome.runtime.lastError) {
           console.log(chrome.runtime.lastError);
+          checkUserLoggedIn();
         }else{
-            email = result.email;
+          email = result.email;
+          checkUserLoggedIn();
         }
     });
 }
@@ -150,7 +172,12 @@ function findSearchTerms(searchTerm){
     })
 }
 
+excluded_actions = ["update_user"];  // actions that does not required user to be logged in
+
 function notify(message) {
+    if(excluded_actions.indexOf(message.type) < 0 && !checkUserLoggedIn()){
+      throw "User not logged in";
+    }
     switch(message.type){
         case "search_term":
             indexData("cos", "search_term", message.data);
@@ -167,6 +194,7 @@ function notify(message) {
     }
 }
 
+loadUserData();
 /*
 Assign `notify()` as a listener to messages from the content script.
 */
