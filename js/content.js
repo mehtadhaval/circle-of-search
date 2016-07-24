@@ -5,6 +5,8 @@
 			return url.fparam('q') || url.param('q');
 		};
 
+		var resultsTemplate = null;
+
 		$('#rhs_block').waitUntilExists(function () {
 			chrome.runtime.sendMessage({
 	            type: "search_term",
@@ -30,17 +32,33 @@
 			});
 		});
 
+		function displayResults(data){
+			$("#rhs_block").prepend(searchTemplate({"results": data}))
+		}
+
     function notify(message) {
         switch(message.type){
             case "matching_searches":
-                console.log(message.data);
+                displayResults(message.data);
                 break;
             default:
                 console.log("Handler not defined for "+message.type)
         }
     }
+
+		function compileTemplate() {
+			$.get("chrome-extension://"+chrome.runtime.id+"/ui/search_results.html")
+			.done(function(data){
+				searchTemplate = Handlebars.compile(data);
+				console.debug("search results template loaded");
+			})
+			.fail(function(data){
+				console.error("failed to load search results template");
+			});
+		}
     /*
     Assign `notify()` as a listener to messages from the content script.
     */
     chrome.runtime.onMessage.addListener(notify);
+		compileTemplate();
 })();

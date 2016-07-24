@@ -50,66 +50,77 @@ var indexData = function(index, type, data){
 
 function findSearchTerms(searchTerm){
     query = {
-        "aggs": {
-          "email": {
-            "terms": {
-              "field": "email",
-              "order": {
-                "avg_score": "desc"
+      "aggs": {
+        "email": {
+          "terms": {
+            "field": "email",
+            "order": {
+              "avg_score": "desc"
+            }
+          },
+          "aggs": {
+            "avg_score": {
+              "avg": {
+                "script": "_score"
               }
             },
-            "aggs": {
-              "avg_score": {
-                "avg": {
-                  "script": "_score"
+            "last_searched": {
+              "max": {
+                "field": "timestamp"
+              }
+            },
+            "top_searches": {
+              "terms": {
+                "field": "term.raw",
+                "order": {
+                  "avg_score": "desc"
                 }
               },
-              "last_searched": {
-                "max": {
-                  "field": "timestamp"
-                }
-              },
-              "top_searches": {
-                "terms": {
-                  "field": "term.raw",
-                  "order": {
-                    "avg_score": "desc"
-                  }
-                },
-                "aggs": {
-                  "avg_score": {
-                    "avg": {
-                      "script": "_score"
-                    }
+              "aggs": {
+                "avg_score": {
+                  "avg": {
+                    "script": "_score"
                   }
                 }
               }
             }
           }
-        },
-        "query": {
-          "function_score": {
-            "query": {
-              "fuzzy": {
-                "term": searchTerm
-              }
-            },
-            "functions": [
-              {
-                "gauss": {
-                  "timestamp": {
-                    "origin": "now",
-                    "scale": "3d",
-                    "offset": 0,
-                    "decay": 0.99
+        }
+      },
+      "query": {
+        "filtered": {
+          "query": {
+            "function_score": {
+              "query": {
+                "fuzzy": {
+                  "term": searchTerm
+                }
+              },
+              "functions": [
+                {
+                  "gauss": {
+                    "timestamp": {
+                      "origin": "now",
+                      "scale": "3d",
+                      "offset": 0,
+                      "decay": 0.99
+                    }
                   }
                 }
+              ]
+            }
+          },
+          "filter": {
+            "not": {
+              "term": {
+                "email": email
               }
-            ]
+            }
           }
-        },
-        "size": 0
-      };
+        }
+      },
+      "size": 0
+    };
     console.log("search query : ", query);
     search(query, "cos", "search_term").done(function(result){
 

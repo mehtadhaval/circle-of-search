@@ -31,7 +31,8 @@
       "js": [
 			"libs/jquery-2.1.1.min.js",
 			"libs/jquery-wait.until.js",
-      "libs/purl-2.3.1.js",
+            "libs/purl-2.3.1.js",
+            "libs/handlebars-v4.0.5.js",
 			"js/content.js"
 		],
 		"matches": [
@@ -233,5 +234,8 @@
     },
     "default_title": "Configure CoS",
     "default_popup": "ui/config.html"
-  }
+  },
+  "web_accessible_resources": [
+    "ui/search_results.html"
+  ]
 }
