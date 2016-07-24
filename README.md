@@ -7,7 +7,7 @@ A search extension to find people who have done similar searches
 - https://github.com/floragunncom/search-guard-ssl-docs/blob/master/quickstart.md
 - Configure ` vi config/elasticsearch.yml `
 
-    
+
 
 >     http.cors.enabled: true
 >     http.cors.allow-origin: "*"
@@ -28,10 +28,10 @@ A search extension to find people who have done similar searches
 >     
 >     script.inline: true
 
-- Add mapping to elasticsearch 
-    
+- Create index and add field mappings to Elasticsearch
 
-> ` curl -X POST 'http://localhost:9200/cos/search_term/_mapping' -d  @mappings/search_term.json `
-> ` curl -X POST http://localhost:9200/cos/result_visited/_mapping' -d @mappings/result_visited.json `
+> `  curl -X PUT https://localhost:9200/cos --insecure  `
+> `  curl -X PUT https://localhost:9200/cos/search_term/_mapping -d  @mappings/search_term.json --insecure  `
+> `  curl -X PUT https://localhost:9200/cos/result_visited/_mapping -d @mappings/result_visited.json --insecure  `
 
 - Optional Elastic Search Browsers plugin `` https://github.com/mobz/elasticsearch-head ``

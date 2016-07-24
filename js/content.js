@@ -19,7 +19,7 @@
 				$container = $(this).closest(".g");
 				data = {
 					title: $(this).text(),
-					link: $(this).attr("data-href") || $(this).attr("href"),
+					url: $(this).attr("data-href") || $(this).attr("href"),
 					snippet: $container.find("span.st").text(),
 					term: searchQuery()
 				};

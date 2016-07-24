@@ -71,7 +71,7 @@ function findSearchTerms(searchTerm){
               },
               "top_searches": {
                 "terms": {
-                  "field": "term",
+                  "field": "term.raw",
                   "order": {
                     "avg_score": "desc"
                   }
@@ -110,14 +110,18 @@ function findSearchTerms(searchTerm){
         },
         "size": 0
       };
+    console.log("search query : ", query);
     search(query, "cos", "search_term").done(function(result){
 
         results = _.map(result.aggregations.email.buckets, function(bucket){
           return {
             "email": bucket.key,
             "last_searched": bucket.last_searched.value,
-            "search_terms": _.map(bucket.top_searches, function(top_search){
-              return top_search.key;
+            "search_terms": _.map(bucket.top_searches.buckets, function(top_search){
+              return {
+                "key": top_search.key,
+                "count": top_search.doc_count
+              }
             })
           }
         });
